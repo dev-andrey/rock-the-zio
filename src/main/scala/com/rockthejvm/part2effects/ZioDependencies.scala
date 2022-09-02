@@ -2,7 +2,9 @@ package com.rockthejvm.part2effects
 
 import zio.*
 
-object ZioDependencies extends ZIOAppDefault {
+import java.util.concurrent.TimeUnit
+
+object ZioDependencies extends ZIOAppDefault:
   import domain.*
 //
 //  val subscriptionService = ZIO.succeed(
@@ -50,14 +52,74 @@ object ZioDependencies extends ZIOAppDefault {
       _ <- subscribe_v2(User("Jane Doe", "jane.doe@unknown.com"))
     yield ()
 
-  val subscriptionLayer = ZLayer.succeed(
-    UserSubscription.create(
-      EmailService.create(),
-      UserDatabase.create(ConnectionPool.create(10))
+  val subscriptionLayer =
+    ZLayer.succeed(
+      UserSubscription.create(
+        EmailService.create(),
+        UserDatabase.create(ConnectionPool.create(10))
+      )
     )
+
+  /** ZLayers
+    */
+  val connPool: ZLayer[Any, Nothing, ConnectionPool] =
+    ZLayer.succeed(ConnectionPool.create(10))
+
+  val dbLayer: ZLayer[ConnectionPool, Nothing, UserDatabase] =
+    ZLayer.fromFunction(UserDatabase.create _)
+
+  // compose layers
+  val database: ULayer[UserDatabase] =
+    connPool >>> dbLayer
+
+  val emailServiceLayer: ULayer[EmailService] =
+    ZLayer.succeed(EmailService.create())
+
+  val databaseWithEmailService: ZLayer[Any, Nothing, UserDatabase & EmailService] =
+    database ++ emailServiceLayer
+
+  val userSubscriptionServiceLayer: ZLayer[UserDatabase & EmailService, Nothing, UserSubscription] =
+    ZLayer.fromFunction(UserSubscription.create _)
+
+  val userSubscription: ZLayer[Any, Nothing, UserSubscription] =
+    databaseWithEmailService >>> userSubscriptionServiceLayer
+
+  // magic v2 (to organize magical deps)
+  val userSubscription_v2 = ZLayer.make[UserSubscription](
+    UserSubscription.layer,
+    EmailService.layer,
+    UserDatabase.layer,
+    ConnectionPool.layer(10)
   )
 
-  def run = program_v2.provide(
-    subscriptionLayer
+  // pass-through (pass dependency into result)
+  val dbWithPoolLayer: ZLayer[ConnectionPool, Nothing, ConnectionPool & UserDatabase] =
+    UserDatabase.layer.passthrough
+
+  // service = take a dep and expose it as a value to further layer
+  val dbService = ZLayer.service[UserDatabase]
+
+  // launch = creates a ZIO that uses the services and never finishes
+  // run a layer as a service
+  val subscriptionLaunch = UserSubscription.layer.launch
+
+  // memoization (active for default)
+  val memoized = ZLayer.make[UserSubscription](
+    UserSubscription.layer,
+    EmailService.layer.fresh, // this one will always be new
+    UserDatabase.layer,
+    ConnectionPool.layer(10)
   )
-}
+
+  val getTime = Clock.currentTime(TimeUnit.SECONDS)
+
+//  def run = program_v2.provide(
+//    userSubscription
+//  )
+  val run = program_v2.provide(
+    UserSubscription.layer,
+    EmailService.layer,
+    UserDatabase.layer,
+    ConnectionPool.layer(10),
+    ZLayer.Debug.tree
+  )

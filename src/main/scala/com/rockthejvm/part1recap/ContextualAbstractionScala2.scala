@@ -1,5 +1,7 @@
 package com.rockthejvm.part1recap
 
+import scala.language.implicitConversions
+
 object ContextualAbstractionScala2 {
 
   // Implicit classes
@@ -55,8 +57,8 @@ object ContextualAbstractionScala2 {
   }
 
   implicit def string2Cat(name: String): Cat = Cat(name)
-  val aCat:Cat = "Garfield" // string2Cat("Garfield")
-  val garfieldMeowing = "Garfield".meow()
+  val aCat: Cat                              = "Garfield" // string2Cat("Garfield")
+  val garfieldMeowing                        = "Garfield".meow()
 
   def main(args: Array[String]): Unit = {
     println(davidsJson)

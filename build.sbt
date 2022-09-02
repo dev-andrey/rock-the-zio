@@ -15,3 +15,8 @@ libraryDependencies ++= Seq(
 testFrameworks += new TestFramework("zio.test.sbt.ZTestFramework")
 
 run / fork := true
+
+scalacOptions ++= Seq(
+  "-deprecation",
+  "-feature"
+)
