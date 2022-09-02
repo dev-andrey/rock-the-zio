@@ -80,7 +80,7 @@ object ZioEffects {
   def main(args: Array[String]): Unit = {
     val runtime        = zio.Runtime.default
     given trace: Trace = Trace.empty
-    Unsafe.unsafeCompat { unsafe =>
+    Unsafe.unsafe { unsafe =>
       given u: Unsafe = unsafe
 
       val firstEffect  = ZIO.succeed {
