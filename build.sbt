@@ -1,6 +1,8 @@
+Global / onChangedBuildSource := ReloadOnSourceChanges
+
 name         := "rock-the-zio"
 version      := "0.1"
-scalaVersion := "3.1.3"
+scalaVersion := "3.2.0"
 
 lazy val zioVersion = "2.0.2"
 

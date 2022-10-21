@@ -76,11 +76,11 @@ object Effects:
 
   /** Exercises - create some IO which
     *
-    * 1. measure the current time of the system
+    *   1. measure the current time of the system
     *
     * 2. measure the duration of a computation
-    *     - use exercise 1
-    *     - use map/flatMap combination of MyIO
+    *   - use exercise 1
+    *   - use map/flatMap combination of MyIO
     *
     * 3. read something from the console
     *

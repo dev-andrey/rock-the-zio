@@ -4,7 +4,7 @@ import java.util.concurrent.Executors
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.{Failure, Success, Try}
 
-object Essentials {
+object Essentials:
 
   // values
   val aBoolean: Boolean = false
@@ -18,14 +18,12 @@ object Essentials {
   // OOP
   class Animal
   class Cat extends Animal
-  trait Carnivore {
+  trait Carnivore:
     def eat(animal: Animal): Unit
-  }
 
   // inheritance model: extend <= 1 class, but inherit from >= 0 traits
-  class Crocodile extends Animal with Carnivore {
+  class Crocodile extends Animal with Carnivore:
     override def eat(animal: Animal): Unit = println("crunch")
-  }
 
   // singleton
   object MySingleton // singleton pattern in one line
@@ -51,10 +49,11 @@ object Essentials {
 
   // for-comprehension
   val checkerboard        = List(1, 2, 3).flatMap(n => List('a', 'b', 'c').map(c => (n, c)))
-  val anotherCheckerboard = for {
-    n <- List(1, 2, 3)
-    c <- List('a', 'b', 'c')
-  } yield (n, c) // equivalent expression
+  val anotherCheckerboard =
+    for
+      n <- List(1, 2, 3)
+      c <- List('a', 'b', 'c')
+    yield (n, c) // equivalent expression
 
   // option and try
   val anOption: Option[Int]      = Option( /*something that might be null*/ 3) // Some(3)
@@ -66,11 +65,11 @@ object Essentials {
   // pattern matching
   val anUnknown: Any = 45
 
-  val ordinal = anUnknown match {
-    case 1 => "first"
-    case 2 => "second"
-    case _ => "unknown"
-  }
+  val ordinal =
+    anUnknown match
+      case 1 => "first"
+      case 2 => "second"
+      case _ => "unknown"
 
   val optionDescriptor = anOption match
     case Some(value) => s"the option is not empty: $value"
@@ -94,11 +93,10 @@ object Essentials {
   val anotherFuture = aFuture.map(_ + 1) // Future(43) when it completes
 
   // partial function
-  val aPartialFunction: PartialFunction[Int, Int] = {
+  val aPartialFunction: PartialFunction[Int, Int] =
     case 1   => 43
     case 8   => 56
     case 100 => 999
-  }
 
   // some more advanced stuff
   trait HigherKindedType[F[_]]
@@ -106,9 +104,7 @@ object Essentials {
     def isSequential: Boolean
   }
 
-  val listChecker = new SequenceChecker[List] {
+  val listChecker = new SequenceChecker[List]:
     override def isSequential = true
-  }
 
-  def main(args: Array[String]): Unit = {}
-}
+  def main(args: Array[String]): Unit = ???

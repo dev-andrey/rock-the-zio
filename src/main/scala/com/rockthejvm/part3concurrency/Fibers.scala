@@ -6,7 +6,6 @@ import java.io.{File, FileReader, FileWriter}
 import scala.io.Source
 
 object Fibers extends ZIOAppDefault:
-
   val meaningOfLife = ZIO.succeed(42)
   val favLang       = ZIO.succeed("Scala")
 
@@ -78,10 +77,12 @@ object Fibers extends ZIOAppDefault:
   // 1 - zip two fibers without using zip
   // hint: create a fiber that wait for both fibers
   def zipFibers[E, A, B](fib1: Fiber[E, A], fib2: Fiber[E, B]): ZIO[Any, Nothing, Fiber[E, (A, B)]] =
-    (for
-      v1 <- fib1.join
-      v2 <- fib2.join
-    yield (v1, v2)).fork
+    (
+      for
+        v1 <- fib1.join
+        v2 <- fib2.join
+      yield (v1, v2)
+    ).fork
 
   def zipFibersGeneric[E, E1 <: E, E2 <: E, A, B](
       fib1: Fiber[E1, A],

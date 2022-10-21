@@ -184,4 +184,3 @@ object ZioErrorHandling extends ZIOAppDefault:
     )
 
   val run = anAttempt
-

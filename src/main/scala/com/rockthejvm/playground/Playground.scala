@@ -21,12 +21,11 @@ object Playground extends ZIOAppDefault:
 
   val suspend2 = decrement(100)
 
-  val run = {
+  val run =
     val eff = notSuspendedEffect
-    for {
+    for
       _      <- ZIO.debug("getting random number")
       random <- Random.nextBoolean
       _      <- ZIO.debug(s"random was $random")
       _      <- if (random) eff else Console.printLine(":(")
-    } yield ()
-  }
+    yield ()
