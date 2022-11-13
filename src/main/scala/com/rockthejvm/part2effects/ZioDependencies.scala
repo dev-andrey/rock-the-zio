@@ -121,5 +121,5 @@ object ZioDependencies extends ZIOAppDefault:
     EmailService.layer,
     UserDatabase.layer,
     ConnectionPool.layer(10),
-    ZLayer.Debug.tree
+    ZLayer.Debug.mermaid
   )

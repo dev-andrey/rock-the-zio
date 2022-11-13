@@ -22,7 +22,7 @@ object Fibers extends ZIOAppDefault:
     for
       _ <- meaningOfLife.debugThread.fork
       _ <- favLang.debugThread.fork
-      _ <- ZIO.sleep(500.millis)
+      _ <- ZIO.sleep(500.millis).debugThread
     yield ()
 
   val meaningOfLifeFiber: ZIO[Any, Nothing, Fiber[Throwable, Int]] =
@@ -47,12 +47,14 @@ object Fibers extends ZIOAppDefault:
   // poll - peek at the result of the fiber RIGHT NOW, without blocking
   val peekFiber =
     for
-      fib    <- ZIO.attempt {
-                  Thread.sleep(1000)
-                  42
-                }.fork
-      result <- fib.poll
-    yield result
+      fib     <- ZIO.attempt {
+                   Thread.sleep(1000)
+                   42
+                 }.fork
+      result  <- fib.poll
+      _       <- ZIO.sleep(1.second)
+      result2 <- fib.poll
+    yield (result, result2)
 
   // compose fibers
   val zippedFibers =
@@ -68,7 +70,7 @@ object Fibers extends ZIOAppDefault:
     for
       fib1 <- ZIO.fail("not good!").debugThread.fork
       fib2 <- ZIO.succeed("Rock the JVM!").debugThread.fork
-      fiber = fib1.orElse(fib2)
+      fiber = fib1 orElse fib2
       res  <- fiber.join
     yield res
 
@@ -128,12 +130,14 @@ object Fibers extends ZIOAppDefault:
       source.getLines().mkString(" ").split(' ').count(_.nonEmpty)
     }
 
-  val run =
+  val runCountWords =
     ZIO
       .foreachPar(1 to 10) { i =>
         countWords(s"src/main/resources/test$i.txt").debugThread
       }
       .debug
+
+  def run = chainedFibers.debugThread
 
 // chainedFibers.debug
 //    zippedFibers.debug
