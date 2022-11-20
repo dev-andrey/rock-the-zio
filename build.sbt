@@ -4,7 +4,7 @@ name         := "rock-the-zio"
 version      := "0.1"
 scalaVersion := "3.2.1"
 
-lazy val zioVersion = "2.0.3"
+lazy val zioVersion = "2.0.4"
 
 libraryDependencies ++= Seq(
   "dev.zio" %% "zio"            % zioVersion,
